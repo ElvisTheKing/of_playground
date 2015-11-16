@@ -13,7 +13,7 @@ void ofApp::setup(){
     gui_sim.addListener(this, &ofApp::onSlidersUpdate);
 
     gui.setup();
-    gui.add(gui_grid_size.setup("grid size",50, 10, 200));
+    gui.add(gui_grid_size.setup("grid size",50, 10, 300));
     gui.add(gui_group_a.setup("A",0.5,0,1));
     gui.add(gui_group_b.setup("B",0.3,0,1));
     gui.add(gui_empty.setup("Empty",0.2,0,1));
@@ -49,6 +49,11 @@ void ofApp::draw(){
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
+    if (key=='s') {
+        saveImg();
+    } else if (key==32) {
+        updateModel();
+    }
 
 }
 
@@ -159,7 +164,15 @@ void ofApp::updateModel() {
 
             for (int n=-1;n<2;n++) {
                 for (int k=-1;k<2;k++) {
-                    c = map.getColor(i+n,j+k);
+                    int x,y;
+                    x=i+n;
+                    y=j+k;
+
+                    if(x<0 || y<0|| x>map.getWidth() || y>map.getHeight()) {
+                        continue;
+                    }
+
+                    c = map.getColor(x,y);
                     r = r + c.r;
                     b = b + c.b;
                 }
@@ -184,5 +197,34 @@ void ofApp::updateModel() {
         }
     }
 
+    ofRandomize(vacant);
     map = new_map;
+}
+
+void ofApp::saveImg() {
+    char filename[200];
+    sprintf(filename, "img_%d.png", image_counter);
+    image_counter++;
+
+    ofPixels pix;
+    pix.allocate(map.getWidth(),map.getHeight(), OF_IMAGE_GRAYSCALE);
+
+    for (int i=0;i<map.getWidth();i++) {
+        for (int j=0;j<map.getWidth();j++) {
+            ofColor c = map.getColor(i,j);
+            if (c.r==255) {
+                pix.setColor(i,j,ofColor::black);
+            } else if(c.b==255) {
+                pix.setColor(i,j,ofColor::white);
+            } else {
+                pix.setColor(i,j,ofColor::gray);
+            }
+        }
+    }
+
+    ofImage img;
+    img.allocate(map.getWidth(),map.getHeight(), OF_IMAGE_GRAYSCALE);
+    img.setFromPixels(pix);
+    img.save(filename);
+
 }

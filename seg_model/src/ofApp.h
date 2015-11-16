@@ -27,6 +27,7 @@ class ofApp : public ofBaseApp{
 
         void resetModel();
         void updateModel();
+        void saveImg();
 
         ofxGuiGroup gui;
         ofxIntSlider gui_grid_size;
@@ -36,4 +37,5 @@ class ofApp : public ofBaseApp{
 
         ofPixels map;
         vector<ofVec2f> vacant;
+        int image_counter = 0;
 };
