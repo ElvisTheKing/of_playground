@@ -126,8 +126,6 @@ void ofApp::resetModel(){
             }
         }
     }
-
-    ofRandomize(vacant);
 }
 
 void ofApp::onSlidersUpdate(float &val) {
@@ -153,8 +151,6 @@ void ofApp::onGridSizeUpdate(int &val) {
 void ofApp::updateModel() {
     ofPixels new_map;
     new_map = ofPixels(map);
-//    new_map.allocate(map.getWidth(),map.getHeight(), map.getImageType());
-//    new_map.setColor(ofColor::black);
     float sim = gui_sim * 8;
 
     for (int i=0;i<map.getWidth();i++) {
@@ -182,22 +178,19 @@ void ofApp::updateModel() {
             r = (r - c.r)/255;
             b = (b - c.b)/255;
 
-            if ((c.r>=254 && sim>r) || (c.b>=254 && sim>b)) {
+            if ((c.r==255 && b>sim) || (c.b==255 && r>sim)) {
                 int q = (int)ofRandom(vacant.size());
                 int x = (int)vacant[q].x;
                 int y = (int)vacant[q].y;
 
                 new_map.setColor(x, y, c);
-                vacant.erase(vacant.begin() + q);
-
                 new_map.setColor(i, j, ofColor::black);
-                vacant.push_back(ofVec2f(i, j));
+                vacant[q] = ofVec2f(i, j);
             }
 
         }
     }
 
-    ofRandomize(vacant);
     map = new_map;
 }
 
